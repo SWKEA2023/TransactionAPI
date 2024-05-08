@@ -9,7 +9,7 @@ public class Program
 {
     public static void Main()
     {
-        var factory = new ConnectionFactory { HostName = "localhost" };
+        var factory = new ConnectionFactory { HostName = "127.0.0.1", Password = "password123", UserName = "admin", VirtualHost = "my_vhost"};
         using var connection = factory.CreateConnection();
         using var channel = connection.CreateModel();
 
@@ -56,7 +56,7 @@ public class Program
             throw new Exception("Simulated transaction failure.");
 
             // Code to process transaction normally
-            Console.WriteLine("Processing transaction...");
+            // Console.WriteLine("Processing transaction...");
         }
         catch (Exception ex)
         {

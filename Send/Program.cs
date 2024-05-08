@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using RabbitMQ.Client;
 
-var factory = new ConnectionFactory { HostName = "localhost" };
+var factory = new ConnectionFactory { HostName = "127.0.0.1", Password = "password123", UserName = "admin", VirtualHost = "my_vhost"};
 using var connection = factory.CreateConnection();
 using var channel = connection.CreateModel();
 
