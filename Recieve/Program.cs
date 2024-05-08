@@ -28,13 +28,13 @@ public class Program
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
 
-        _channel.QueueDeclare(queue: "hello", durable: false, exclusive: false, autoDelete: false, arguments: null);
+        _channel.QueueDeclare(queue: "transactionApiQueue", durable: false, exclusive: false, autoDelete: false, arguments: null);
         Console.WriteLine(" [*] Waiting for messages from CinemaAPI.");
 
         var consumer = new EventingBasicConsumer(_channel);
         consumer.Received += Consumer_Received;
 
-        _channel.BasicConsume(queue: "hello", autoAck: true, consumer: consumer);
+        _channel.BasicConsume(queue: "transactionApiQueue", autoAck: true, consumer: consumer);
 
         Console.WriteLine(" Press [enter] to exit.");
         Console.ReadLine();
