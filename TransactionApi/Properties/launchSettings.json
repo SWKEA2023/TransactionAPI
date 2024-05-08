@@ -2,12 +2,14 @@
   "profiles": {
     "Receive": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": false,
-      "applicationUrl": "https://localhost:7152;http://localhost:5105",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7152;http://localhost:5105"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
     }
   }
 }
