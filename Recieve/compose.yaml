@@ -10,9 +10,9 @@
 services:
   receive:
     build:
-      context: .  # This points to the current directory where the Dockerfile is located
+      context: . 
     ports:
-      - "8090:8080"  # Assuming your application inside the container listens on port 8080
+      - "8090:8080" 
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to

@@ -7,9 +7,9 @@ using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace Receive;
+namespace TransactionApi;
 
-public class Program
+public class Program    
 {
     private static IConfiguration _configuration;
     private static IModel _channel;

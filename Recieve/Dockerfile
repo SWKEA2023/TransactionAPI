@@ -27,8 +27,7 @@ ARG TARGETARCH
 # If TARGETARCH is "amd64", replace it with "x64" - "x64" is .NET's canonical name for this and "amd64" doesn't
 #   work in .NET 6.0.
 RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
-    dotnet publish "Receive.csproj" -a ${TARGETARCH/amd64/x64} --use-current-runtime --self-contained false -o /app
-
+    dotnet publish "TransactionApi.csproj" -a ${TARGETARCH/amd64/x64} --use-current-runtime --self-contained false -o /app
 
 # If you need to enable globalization and time zones:
 # https://github.com/dotnet/dotnet-docker/blob/main/samples/enable-globalization.md
@@ -54,4 +53,4 @@ COPY --from=build /app .
 # and https://github.com/dotnet/dotnet-docker/discussions/4764
 USER $APP_UID
 
-ENTRYPOINT ["dotnet", "Receive.dll"]
+ENTRYPOINT ["dotnet", "TransactionApi.dll"]
