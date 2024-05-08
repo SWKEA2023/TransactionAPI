@@ -9,7 +9,7 @@ using RabbitMQ.Client.Events;
 
 namespace TransactionApi;
 
-public class Program    
+public class Program
 {
     private static IConfiguration _configuration;
     private static IModel _channel;
@@ -63,6 +63,7 @@ public class Program
         var random = new Random();
         var chance = random.Next(100);
 
+        // Simulate a decision based on data processing
         if (chance < 70)
         {
             ForwardToAdminApi(data);
