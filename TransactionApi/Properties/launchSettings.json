@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Receive": {
+    "TransactionApi": {
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
