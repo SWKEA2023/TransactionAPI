@@ -43,6 +43,10 @@ public class Program
 
             Console.WriteLine(" Press [enter] to exit.");
             Console.ReadLine();
+
+            Console.WriteLine("Application started. Press Ctrl+C to exit.");
+            ManualResetEvent resetEvent = new ManualResetEvent(false);
+            resetEvent.WaitOne();
         }
         else
         {
