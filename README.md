@@ -18,6 +18,7 @@
 1. Open a terminal in the project directory
 1. Run the following command:
 	```bash
+	dotnet user-secrets init
 	dotnet user-secrets set "RabbitMQ:RMQ_URL" "amqp://<username>:<password>@<hostname>:5672/"
 	```
 1. Verify that the secret was added by running:
