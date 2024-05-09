@@ -18,7 +18,6 @@ public class Program
     public static void Main(string[] args)
     {
         var env = Environment.GetEnvironmentVariable("RMQ_URL");
-        Console.WriteLine($"RMQ_URL: {env}");
 
         // var builder = new ConfigurationBuilder()
         //     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -29,7 +28,6 @@ public class Program
 
         if (env != null)
         {
-            // var factory = new ConnectionFactory { Uri = new Uri("amqp://admin:password123@localhost:5672/my_vhost") };
             var factory = new ConnectionFactory { Uri = new Uri(env) };
 
             _connection = factory.CreateConnection();

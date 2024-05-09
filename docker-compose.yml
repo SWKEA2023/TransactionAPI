@@ -17,4 +17,4 @@ services:
     image: transactionapi
     build: ./TransactionApi
     environment:
-      - RMQ_URL=amqp://admin:password123@0.0.0.0:5672/my_vhost
+      - RMQ_URL=amqp://admin:password123@192.168.16.3:5672/my_vhost
