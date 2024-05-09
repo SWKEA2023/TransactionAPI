@@ -11,33 +11,45 @@ namespace TransactionApi;
 
 public class Program
 {
-    private static IConfiguration _configuration;
+    // private static IConfiguration _configuration;
     private static IModel _channel;
     private static IConnection _connection;
 
     public static void Main(string[] args)
     {
-        var builder = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-            .AddUserSecrets<Program>();
-        _configuration = builder.Build();
+        var env = Environment.GetEnvironmentVariable("RMQ_URL");
+        Console.WriteLine($"RMQ_URL: {env}");
 
-        var rabbitMqUrl = _configuration["RabbitMQ:RMQ_URL"];
-        var factory = new ConnectionFactory { Uri = new Uri(rabbitMqUrl) };
+        // var builder = new ConfigurationBuilder()
+        //     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+        //     .AddUserSecrets<Program>();
+        // _configuration = builder.Build();
 
-        _connection = factory.CreateConnection();
-        _channel = _connection.CreateModel();
+        // var rabbitMqUrl = _configuration["RabbitMQ:RMQ_URL"];
 
-        _channel.QueueDeclare(queue: "transactionApiQueue", durable: false, exclusive: false, autoDelete: false, arguments: null);
-        Console.WriteLine(" [*] Waiting for messages from CinemaAPI.");
+        if (env != null)
+        {
+            // var factory = new ConnectionFactory { Uri = new Uri("amqp://admin:password123@localhost:5672/my_vhost") };
+            var factory = new ConnectionFactory { Uri = new Uri(env) };
 
-        var consumer = new EventingBasicConsumer(_channel);
-        consumer.Received += Consumer_Received;
+            _connection = factory.CreateConnection();
+            _channel = _connection.CreateModel();
 
-        _channel.BasicConsume(queue: "transactionApiQueue", autoAck: true, consumer: consumer);
+            _channel.QueueDeclare(queue: "transactionApiQueue", durable: true, exclusive: false, autoDelete: false, arguments: null);
+            Console.WriteLine(" [*] Waiting for messages from CinemaAPI.");
 
-        Console.WriteLine(" Press [enter] to exit.");
-        Console.ReadLine();
+            var consumer = new EventingBasicConsumer(_channel);
+            consumer.Received += Consumer_Received;
+
+            _channel.BasicConsume(queue: "transactionApiQueue", autoAck: true, consumer: consumer);
+
+            Console.WriteLine(" Press [enter] to exit.");
+            Console.ReadLine();
+        }
+        else
+        {
+            Console.WriteLine("RMQ_URL environment variable is not set.");
+        }
     }
 
     private static void Consumer_Received(object model, BasicDeliverEventArgs ea)

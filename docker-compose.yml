@@ -1,0 +1,20 @@
+version: '3.4'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    hostname: my-rabbit
+    ports:
+      - '15672:15672'
+      - '5672:5672'
+    environment:
+      RABBITMQ_DEFAULT_VHOST: my_vhost
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password123
+
+  transactionapi:
+    image: transactionapi
+    build: ./TransactionApi
+    environment:
+      - RMQ_URL=amqp://admin:password123@0.0.0.0:5672/my_vhost
