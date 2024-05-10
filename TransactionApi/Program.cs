@@ -1,11 +1,10 @@
 ﻿#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 #pragma warning disable CS8622 // Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
 
-using System.Text;
-using System.Text.Json;
-using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Text;
+using System.Text.Json;
 
 namespace TransactionApi;
 
@@ -18,6 +17,7 @@ public class Program
     public static void Main(string[] args)
     {
         var env = Environment.GetEnvironmentVariable("RMQ_URL");
+        const string queueName = "transaction_api.order";
 
         // var builder = new ConfigurationBuilder()
         //     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -33,13 +33,13 @@ public class Program
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
 
-            _channel.QueueDeclare(queue: "transactionApiQueue", durable: true, exclusive: false, autoDelete: false, arguments: null);
+            _channel.QueueDeclare(queue: queueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
             Console.WriteLine(" [*] Waiting for messages from CinemaAPI.");
 
             var consumer = new EventingBasicConsumer(_channel);
             consumer.Received += Consumer_Received;
 
-            _channel.BasicConsume(queue: "transactionApiQueue", autoAck: true, consumer: consumer);
+            _channel.BasicConsume(queue: queueName, autoAck: true, consumer: consumer);
 
             Console.WriteLine(" Press [enter] to exit.");
             Console.ReadLine();
@@ -93,7 +93,7 @@ public class Program
         Console.WriteLine("Forwarding data to AdminAPI...");
         var message = JsonSerializer.Serialize(data);
         var body = Encoding.UTF8.GetBytes(message);
-        _channel.BasicPublish(exchange: "", routingKey: "successQueue", basicProperties: null, body: body);
+        _channel.BasicPublish(exchange: "", routingKey: "admin_api.order_received", basicProperties: null, body: body);
         Console.WriteLine(" [x] Data sent to AdminAPI");
     }
 
@@ -101,7 +101,7 @@ public class Program
     {
         Console.WriteLine("Notifying error...");
         var body = Encoding.UTF8.GetBytes(errorMessage);
-        _channel.BasicPublish(exchange: "", routingKey: "errorQueue", basicProperties: null, body: body);
+        _channel.BasicPublish(exchange: "", routingKey: "email_api.declined", basicProperties: null, body: body);
         Console.WriteLine(" [x] Sent {0}", errorMessage);
     }
 }
