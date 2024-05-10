@@ -17,7 +17,7 @@ public class Program
     public static void Main(string[] args)
     {
         var env = Environment.GetEnvironmentVariable("RMQ_URL");
-        const string queueName = "transaction_api.order";
+        var transactionQueue = Environment.GetEnvironmentVariable("TRANSACTION_QUEUE");
 
         // var builder = new ConfigurationBuilder()
         //     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -33,13 +33,13 @@ public class Program
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
 
-            _channel.QueueDeclare(queue: queueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
+            _channel.QueueDeclare(queue: transactionQueue, durable: true, exclusive: false, autoDelete: false, arguments: null);
             Console.WriteLine(" [*] Waiting for messages from CinemaAPI.");
 
             var consumer = new EventingBasicConsumer(_channel);
             consumer.Received += Consumer_Received;
 
-            _channel.BasicConsume(queue: queueName, autoAck: true, consumer: consumer);
+            _channel.BasicConsume(queue: transactionQueue, autoAck: true, consumer: consumer);
 
             Console.WriteLine(" Press [enter] to exit.");
             Console.ReadLine();
@@ -91,17 +91,19 @@ public class Program
     private static void ForwardToAdminApi(JsonElement data)
     {
         Console.WriteLine("Forwarding data to AdminAPI...");
+        var adminQueue = Environment.GetEnvironmentVariable("ADMIN_QUEUE");
         var message = JsonSerializer.Serialize(data);
         var body = Encoding.UTF8.GetBytes(message);
-        _channel.BasicPublish(exchange: "", routingKey: "admin_api.order_received", basicProperties: null, body: body);
+        _channel.BasicPublish(exchange: "", routingKey: adminQueue, basicProperties: null, body: body);
         Console.WriteLine(" [x] Data sent to AdminAPI");
     }
 
     private static void NotifyEmailApiAboutError(string errorMessage)
     {
         Console.WriteLine("Notifying error...");
+        var emailQueue = Environment.GetEnvironmentVariable("EMAIL_QUEUE");
         var body = Encoding.UTF8.GetBytes(errorMessage);
-        _channel.BasicPublish(exchange: "", routingKey: "email_api.declined", basicProperties: null, body: body);
+        _channel.BasicPublish(exchange: "", routingKey: emailQueue, basicProperties: null, body: body);
         Console.WriteLine(" [x] Sent {0}", errorMessage);
     }
 }
