@@ -1,5 +1,13 @@
 # Setup
 
+## Setup environment variables for the project
+````
+	RMQ_URL=<amqp://<username>:<password>@<hostname>:5672/v_host>
+	TRANSACTION_QUEUE=<queue_name>
+	ADMIN_QUEUE=<queue_name>
+	EMAIL_QUEUE=<queue_name>
+````
+
 ## Setup User secrets for the project
 
 ### With Visual Studio
