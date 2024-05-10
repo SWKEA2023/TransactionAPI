@@ -38,5 +38,4 @@ RUN dotnet publish "./TransactionApi.csproj" -c release -o /app --no-restore
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build-env /app ./
-EXPOSE 5672 15672
 ENTRYPOINT ["dotnet", "TransactionApi.dll"]
