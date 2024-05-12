@@ -3,7 +3,7 @@ version: '3.4'
 services:
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbitmq
+    container_name: rabbitmq-trans
     hostname: my-rabbit
     ports:
       - '15672:15672'
@@ -14,7 +14,12 @@ services:
       RABBITMQ_DEFAULT_PASS: password123
 
   transactionapi:
+    depends_on:
+      - rabbitmq
     image: transactionapi
     build: ./TransactionApi
     environment:
-      - RMQ_URL=amqp://admin:password123@172.20.0.2:5672/my_vhost
+      - RMQ_URL=amqp://admin:password123@rabbitmq:5672/my_vhost
+      - TRANSACTION_QUEUE=transaction_api.order
+      - ADMIN_QUEUE=admin_api.order_received
+      - EMAIL_QUEUE=email_api.order_received
