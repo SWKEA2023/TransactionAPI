@@ -8,12 +8,19 @@ using System.Text.Json;
 
 namespace TransactionApi;
 
+
+/// <summary>
+/// Main entry point for the TransactionAPI
+/// </summary>
 public class Program
 {
     // private static IConfiguration _configuration;
     private static IModel _channel;
     private static IConnection _connection;
 
+    /// <summary>
+    /// Main entry point for the TransactionAPI
+    /// </summary>
     public static void Main(string[] args)
     {
         var env = Environment.GetEnvironmentVariable("RMQ_URL");
@@ -26,34 +33,30 @@ public class Program
 
         // var rabbitMqUrl = _configuration["RabbitMQ:RMQ_URL"];
 
-        if (env != null)
-        {
-            var factory = new ConnectionFactory { Uri = new Uri(env) };
+        var factory = new ConnectionFactory { Uri = new Uri(env ?? throw new ArgumentNullException()) };
 
-            _connection = factory.CreateConnection();
-            _channel = _connection.CreateModel();
+        _connection = factory.CreateConnection();
+        _channel = _connection.CreateModel();
 
-            _channel.QueueDeclare(queue: transactionQueue, durable: true, exclusive: false, autoDelete: false, arguments: null);
-            Console.WriteLine(" [*] Waiting for messages from CinemaAPI.");
+        _channel.QueueDeclare(queue: transactionQueue, durable: true, exclusive: false, autoDelete: false, arguments: null);
+        Console.WriteLine(" [*] Waiting for messages from CinemaAPI.");
 
-            var consumer = new EventingBasicConsumer(_channel);
-            consumer.Received += Consumer_Received;
+        var consumer = new EventingBasicConsumer(_channel);
+        consumer.Received += Consumer_Received;
 
-            _channel.BasicConsume(queue: transactionQueue, autoAck: true, consumer: consumer);
+        _channel.BasicConsume(queue: transactionQueue, autoAck: true, consumer: consumer);
 
-            Console.WriteLine(" Press [enter] to exit.");
-            Console.ReadLine();
+        Console.WriteLine(" Press [enter] to exit.");
+        Console.ReadLine();
 
-            Console.WriteLine("Application started. Press Ctrl+C to exit.");
-            ManualResetEvent resetEvent = new ManualResetEvent(false);
-            resetEvent.WaitOne();
-        }
-        else
-        {
-            Console.WriteLine("RMQ_URL environment variable is not set.");
-        }
+        Console.WriteLine("Application started. Press Ctrl+C to exit.");
+        ManualResetEvent resetEvent = new ManualResetEvent(false);
+        resetEvent.WaitOne();
     }
 
+    /// <summary>
+    /// Event handler for received messages from CinemaAPI.
+    /// </summary>
     private static void Consumer_Received(object model, BasicDeliverEventArgs ea)
     {
         try
@@ -71,6 +74,10 @@ public class Program
         }
     }
 
+    /// <summary>
+    /// Process data received from the CinemaAPI.
+    /// </summary>
+    /// <param name="data">Data being processed from CinemaAPI as a JsonElement</param>
     private static void ProcessData(JsonElement data)
     {
         Console.WriteLine("Processing transaction...");
@@ -88,6 +95,10 @@ public class Program
         }
     }
 
+    /// <summary>
+    /// Forwards data to the AdminAPI.
+    /// </summary>
+    /// <param name="data">Data being forwarded to AdminAPI as a JsonElement</param>
     private static void ForwardToAdminApi(JsonElement data)
     {
         Console.WriteLine("Forwarding data to AdminAPI...");
@@ -98,6 +109,10 @@ public class Program
         Console.WriteLine(" [x] Data sent to AdminAPI");
     }
 
+    /// <summary>
+    /// Notify the EmailAPI about an error.
+    /// </summary>
+    /// <param name="errorMessage">For setting an error message</param>
     private static void NotifyEmailApiAboutError(string errorMessage)
     {
         Console.WriteLine("Notifying error...");
